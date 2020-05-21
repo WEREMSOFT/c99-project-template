@@ -10,8 +10,10 @@ LIBS_D := libs/
 HTML_D := html/
 INCLUDE_D := -I$(LIBS_D)include/
 STATIC_LIBS_D := -L$(LIBS_D)static/
-CFLAGS := -O0 -Wpedantic -g -Wall -std=c99
+CFLAGS := -O2 -Wpedantic -g -Wall -std=c99 -g3 -Werror -D_FORTIFY_SOURCE=2 -DOS_$(DETTECTED_OS) 
 DEBUGGER := kdbg # Other options: cgdb gdb
+MK_DIR:= mkdir -p
+BIN_EXTENSION = bin
 
 # Vars for emscripten build
 RAYLIB_PATH := /Users/pabloweremczuk/Documents/Proyectos/c/raylib
