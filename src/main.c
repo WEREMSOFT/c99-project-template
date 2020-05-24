@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <cyle_count.h>
 
+int sum(int x, int y){
+    return x + y;
+}
+
 int main(void){
     #ifdef OS_Windows_NT
     printf("Windows dettected\n");
