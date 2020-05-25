@@ -23,6 +23,7 @@ TEST_SRC_D := tests/
 TEST_BLD_D := $(TEST_SRC_D)bin/
 LIBS_D := libs/
 HTML_D := html/
+ASM_D := asm/
 
 INCLUDE_D := -I$(LIBS_D)include/
 STATIC_LIBS_D := -L$(LIBS_D)static/
@@ -91,6 +92,7 @@ create_folders:
 	$(MK_DIR) libs/static
 	$(MK_DIR) $(HTML_D)
 	$(MK_DIR) $(TEST_BLD_D)
+	$(MK_DIR) $(ASM_D)
 	
 init_project: create_folders
 	touch ./src/main.c
@@ -100,6 +102,7 @@ clean:
 	rm -rf $(HTML_D)*
 	rm -rf $(OBJ_D)*
 	rm -rf $(TEST_BLD_D)*
+	rm -rf $(ASM_D)*
 
 run_perf_%.$(BIN_EXTENSION): $(BLD_D)%.$(BIN_EXTENSION)
 	perf stat -e task-clock,cycles,instructions,cache-references,cache-misses $^
@@ -112,3 +115,6 @@ run_%: $(BLD_D)%.$(BIN_EXTENSION)
 
 test_%: $(TEST_BLD_D)%.spec.$(BIN_EXTENSION)
 	$^
+
+$(ASM_D)%.S: $(SRC_D)%.c
+	$(CC_COMMAND) -o $@ $(CFLAGS) -S $^ $(LINK_LIBS)  
