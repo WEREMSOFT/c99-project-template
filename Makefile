@@ -34,7 +34,7 @@ BIN_EXTENSION = bin
 
 # Vars for emscripten build
 RAYLIB_PATH := /Users/pabloweremczuk/Documents/Proyectos/c/raylib
-EMSC_CFLAGS := -O2 -s -Wall -std=c99 -D_DEFAULT_SOURCE -Wno-missing-braces -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0 -g4 -s USE_GLFW=3 -s TOTAL_MEMORY=67108864 -v -D PLATFORM_WEB
+EMSC_CFLAGS := -O2 -s -Wall -std=c99 -D_DEFAULT_SOURCE -Wno-missing-braces -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0 -s USE_GLFW=3 -s TOTAL_MEMORY=67108864 -v -D OS_WEB
 EMSC_CC := emcc
 EMSC_STATIC_LIBS_D :=
 # EMSC_STATIC_LIBS_D := $(LIBS_D)static/libraylib.bc
@@ -80,7 +80,8 @@ $(BLD_D)%.$(BIN_EXTENSION): $(SRC_D)%.c
 	@echo ""
 
 $(HTML_D)%.html: $(SRC_D)%.c
-	$(EMSC_CC_COMMAND) -o $@ $^ $(EMSC_STATIC_LIBS_D)
+	$(EMSC_CC_COMMAND) -g4 --source-map-base http://127.0.0.1:5500/html/ $^ -o $@ $(EMSC_STATIC_LIBS_D)
+	cp -r src html/src
 
 print_information:
 	@echo "Dettected OS: $(DETTECTED_OS)"
