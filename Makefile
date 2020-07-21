@@ -25,9 +25,12 @@ LIBS_D := libs/
 HTML_D := html/
 ASM_D := asm/
 
+SRC_FILES := $(wildcard $(SRC_D)*.c)
+OBJ_FILES := $(patsubst $(SRC_D)%.c,$(OBJ_D)%.o,$(SRC_FILES))
+
 INCLUDE_D := -I$(LIBS_D)include/
 STATIC_LIBS_D := -L$(LIBS_D)static/
-CFLAGS := -O0 -Wpedantic -g -Wall -std=c99 -g3 -D_FORTIFY_SOURCE=2 -DOS_$(DETTECTED_OS) 
+CFLAGS := -O0 -Wpedantic -g -Wall -std=c99 -g3 -DOS_$(DETTECTED_OS) 
 DEBUGGER := kdbg # Other options: cgdb gdb
 MK_DIR:= mkdir -p
 BIN_EXTENSION = bin
@@ -48,7 +51,7 @@ EMSC_CC_COMMAND := $(EMSC_CC) $(EMSC_CFLAGS) $(INCLUDE_D) $(STATIC_LIBS_D)
 #//////////////////////////////////////////////////
 
 ifeq ($(DETTECTED_OS),Linux)
-	LINK_LIBS :=
+	LINK_LIBS := -lpthread 
 	TEST_LINK_LIBS := -lunity 
 	#LINK_LIBS := -l:libraylib-linux.a -l:libglfw3.a -lm -ldl -lpthread -lX11 -lxcb -lGL -lGLX -lXext -lGLdispatch -lXau -lXdmcp
 else ifeq ($(DETTECTED_OS),Darwin)
@@ -64,10 +67,13 @@ endif
 
 all: print_information $(BLD_D)main.$(BIN_EXTENSION) web
 
+main: $(OBJ_FILES)
+	$(CC_COMMAND) -o $(BLD_D)$@.bin $^ $(LINK_LIBS)
+
 web: $(HTML_D)main.html
 
 $(OBJ_D)%.o: $(SRC_D)%.c
-	$(CC_COMMAND) -o $(OBJ_D)$@ $^ $(LINK_LIBS)
+	$(CC_COMMAND) -c -o $@ $^
 
 $(TEST_BLD_D)%.spec.$(BIN_EXTENSION): $(TEST_SRC_D)%.spec.c
 	@echo "### Building tests for $(@) START ###"
@@ -81,7 +87,7 @@ $(BLD_D)%.$(BIN_EXTENSION): $(SRC_D)%.c
 	@echo "### End ###"
 	@echo ""
 
-$(HTML_D)%.html: $(SRC_D)%.c
+$(HTML_D)%.html: $(SRC_FILES)
 	$(EMSC_CC_COMMAND) -g4 --source-map-base http://127.0.0.1:5500/html/ $^ -o $@ $(EMSC_STATIC_LIBS_D)
 	cp -r src html/src
 
@@ -89,6 +95,7 @@ print_information:
 	@echo "Dettected OS: $(DETTECTED_OS)"
 
 create_folders:
+	$(MK_DIR) $(OBJ_D)
 	$(MK_DIR) $(BLD_D)
 	$(MK_DIR) $(SRC_D)
 	$(MK_DIR) libs/include
@@ -106,6 +113,7 @@ clean:
 	rm -rf $(OBJ_D)*
 	rm -rf $(TEST_BLD_D)*
 	rm -rf $(ASM_D)*
+	rm -rf $(SRC_D)*.o
 
 run_perf_%.$(BIN_EXTENSION): $(BLD_D)%.$(BIN_EXTENSION)
 	perf stat -e task-clock,cycles,instructions,cache-references,cache-misses $^
