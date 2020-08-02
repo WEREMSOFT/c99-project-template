@@ -1,6 +1,8 @@
 #include <stdio.h>
 #ifndef OS_WEB
 #include <cyle_count.h>
+//#define DEBUG_MEMORY // this define will print allocations and print information
+#include <overwrite_macros.h>
 #endif
 int sum(int x, int y){
     return x + y;
@@ -20,6 +22,9 @@ int main(void){
     #ifndef OS_WEB
     uint64_t cycles = rdtsc();
     #endif
+
+    void *p = malloc(sizeof(float) * 100);
+    free(p);
 
     char *c = "this is a text!!";
     int number = 10;
