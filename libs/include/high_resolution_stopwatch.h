@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-
+#include <locale.h>
 
 typedef struct timeval TimeVal;
 
@@ -16,7 +16,8 @@ void hdStopwatchStart(void) {
 void hdStopwatchStop(void) {
     gettimeofday(&et,NULL);
     int elapsed = ((et.tv_sec - st.tv_sec) * 1000000) + (et.tv_usec - st.tv_usec);
-    printf("HDStopwatch::Elapsed time: %d micro seconds\n",elapsed);
+    setlocale(LC_ALL, "");
+    printf("HDStopwatch::Elapsed time: %'d micro seconds\n",elapsed);
 }
 
 #endif
